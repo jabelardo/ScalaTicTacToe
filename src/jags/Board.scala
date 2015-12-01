@@ -67,21 +67,16 @@ class Board {
   def isTie = getWinner == Board.CellState.Empty && countEmptyCells == 0
 
   def countEmptyCells = {
-    var count = 0
-    for (row <- 0 until Board.DIM) {
-      for (column <- 0 until Board.DIM) {
-        if (cells(row)(column) == Board.CellState.Empty) count += 1
-      }
-    }
-    count
+    val sum = (0 /: cells) {(sum, row) => row.count(_ == Board.CellState.Empty)}
+    sum
   }
 
   def possibleMoves = {
-    var builder = new ArrayBuffer[(Int, Int)]()
+    val builder = new ArrayBuffer[(Int, Int)]()
     for (row <- 0 until Board.DIM) {
       for (column <- 0 until Board.DIM) {
         if (cells(row)(column) == Board.CellState.Empty) {
-          builder += Pair(row, column)
+          builder += Tuple2(row, column)
         }
       }
     }
@@ -217,7 +212,7 @@ class Board {
     val (rowB, rowC) = rowA match {
       case 0 => (1, 2)
       case 1 => (0, 2)
-      case 1 => (0, 1)
+      case 2 => (0, 1)
     }
     val (columnB, columnC) = columnA match {
       case 0 => (1, 2)
@@ -268,14 +263,13 @@ class Board {
   }
 
   def getTrapMove(state: Board.CellState): (Int, Int) = {
-    var result: (Int, Int) = null
     for (row <- 0 until Board.DIM) {
       for (column <- 0 until Board.DIM) {
         if ((row != 2) && (column != 2)) {
-          result = getTrapMoveNoCenter(state, row, column)
+          val result = getTrapMoveNoCenter(state, row, column)
           if (result != null) return result
         } else {
-          result = getTrapMoveCenter(state)
+          val result = getTrapMoveCenter(state)
           if (result != null) return result
         }
       }
@@ -287,7 +281,6 @@ class Board {
     if (countEmptyCells < 8) {
       return null
     }
-    var result: (Int, Int) = null
     if (cells(0)(0) == state) {
       return (1, 1)
     }
@@ -307,7 +300,6 @@ class Board {
     if (countEmptyCells < 8) {
       return null
     }
-    var result: (Int, Int) = null
     if (cells(0)(0) == Board.CellState.Empty) {
       return (0, 0)
     }
